@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Editar Atencion Cliente{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Modificar Atencion Cliente</h4>
+            </div>
+            <div class="card-body">
+                <form action="/atencion_cliente/editar/{{ atencion_cliente.id_atencion }}" method="POST">
+                    <div class="mb-3">
+                        <label for="id_atencion" class="form-label">Id Atencion</label>
+                        <input type="number" class="form-control" id="id_atencion" name="id_atencion"
+                            value="{{ atencion_cliente.id_atencion }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_registro" class="form-label">Fecha Registro</label>
+                        <input type="datetime" class="form-control" id="fecha_registro" name="fecha_registro"
+                            value="{{ atencion_cliente.fecha_registro }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipo_solicitud" class="form-label">Tipo Solicitud</label>
+                        <select class="form-select" id="tipo_solicitud" name="tipo_solicitud" required>
+                            <option value="" selected disabled>Seleccionar Tipo</option>
+                            <option value="consulta" {% if atencion_cliente.tipo_solicitud=='consulta' %}selected{%
+                                endif %}>Consulta</option>
+                            <option value="reclamo" {% if atencion_cliente.tipo_solicitud=='reclamo' %}selected{% endif
+                                %}>Reclamo</option>
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripcion</label>
+                        <input type="text" class="form-control" id="descripcion" name="descripcion"
+                            value="{{ atencion_cliente.descripcion }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado de Atencion</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="abierto" {% if atencion_cliente.estado=='abierto' %}selected{% endif %}>
+                                Abierto</option>
+                            <option value="proceso" {% if atencion_cliente.estado=='proceso' %}selected{% endif %}>En
+                                Proceso</option>
+                            <option value="cerrado" {% if atencion_cliente.estado=='cerrado' %}selected{% endif %}>
+                                Cerrado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prioridad" class="form-label">Prioridad de Atencion</label>
+                        <select class="form-select" id="prioridad" name="prioridad" required>
+                            <option value="alta" {% if atencion_cliente.prioridad=='alta' %}selected{% endif %}>
+                                Alta</option>
+                            <option value="media" {% if atencion_cliente.prioridad=='media' %}selected{% endif %}>
+                                Media</option>
+                            <option value="baja" {% if atencion_cliente.prioridad=='baja' %}selected{% endif %}>
+                                Baja</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_cliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="id_cliente" name="id_cliente" required>
+                            <option value="" disabled>Seleccione un cliente</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.id_cliente }}" {% if
+                                cliente.id_cliente==atencion_cliente.id_cliente %}selected{% endif %}>
+                                {{ cliente.nombre_cliente }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_usuario" class="form-label">Usuario(Soporte) Encargado</label>
+                        <select class="form-select" id="id_usuario" name="id_usuario" required>
+                            <option value="" disabled>Seleccione un usuario</option>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario.id_usuario }}" {% if
+                                usuario.id_usuario==atencion_cliente.id_usuario %}selected{% endif %}>
+                                {{ usuario.nombre_usuario }} ({{ usuario.rol }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/atencion_cliente" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}
+Centro de Atención al Cliente
+{% endblock %}
+
+{% block content %}
+
+<div class="chat-layout">
+
+    <div class="chat-top-row">
+        <div class="chat-sidebar">
+            <div class="chat-search">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="mb-1">Mensajes de Atención</h5>
+                        <small class="text-muted">Selecciona un ticket para ver la conversación.</small>
+                    </div>
+                    <a href="/atencion_cliente/" class="btn btn-sm btn-light">Volver</a>
+                </div>
+
+                <form method="GET" action="/atencion_cliente/">
+                    <input type="text" name="q" class="form-control" placeholder="Buscar cliente" value="{{ q or '' }}">
+                </form>
+            </div>
+
+            <div class="chat-contacts">
+                {% for ticket in atenciones %}
+                    {% set prev = previews.get(ticket.id_atencion) if previews else None %}
+                    {% set progreso = 40 if ticket.estado | lower == 'abierto' else 70 if ticket.estado | lower == 'proceso' else 100 %}
+                    {% set satisfaccion = 'Baja' if ticket.estado | lower == 'abierto' else 'Media' if ticket.estado | lower == 'proceso' else 'Alta' %}
+                    <a href="/atencion_cliente/chat/{{ ticket.id_atencion }}" class="chat-contact {% if atencion and ticket.id_atencion == atencion.id_atencion %}bg-primary text-white{% endif %}">
+                        <div class="avatar-circle">{{ ticket.cliente.nombre_cliente[:2] | upper }}</div>
+                        <div class="contact-info">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <h6 class="mb-1">{{ ticket.cliente.nombre_cliente }}</h6>
+                                <span class="badge bg-light text-dark">{{ ticket.estado | title }}</span>
+                            </div>
+                            <small class="text-muted">{{ ticket.tipo_solicitud }}</small>
+                            <p class="mb-1 text-muted mt-2">{{ prev['mensaje'] if prev else 'Sin mensajes todavía.' }}</p>
+                            <div class="d-flex flex-wrap gap-2 small text-muted">
+                                {% if prev %}
+                                    <span>{{ prev['hora'] }}</span>
+                                {% else %}
+                                    <span>Sin actividad reciente</span>
+                                {% endif %}
+                                <span>Progreso {{ progreso }}%</span>
+                                <span>Satisfacción {{ satisfaccion }}</span>
+                            </div>
+                            <div class="progress progress-sm mt-2">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: {{ progreso }}%;" aria-valuenow="{{ progreso }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="client-panel">
+            <div class="client-card">
+                <div class="client-avatar">{{ atencion.cliente.nombre_cliente[:2] | upper }}</div>
+                <h5>{{ atencion.cliente.nombre_cliente }}</h5>
+                <p class="text-muted mb-1">{{ atencion.cliente.correo }}</p>
+                <p class="text-muted mb-3">{{ atencion.cliente.telefono }}</p>
+
+                <div class="border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">Tipo</small>
+                        <strong>{{ atencion.tipo_solicitud }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-muted">Estado</small>
+                        <strong>{{ atencion.estado }}</strong>
+                    </div>
+                </div>
+
+                <div class="border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">Resolución</small>
+                        <strong>{{ 'Alta' if atencion.estado | lower == 'cerrado' else 'Media' if atencion.estado | lower == 'proceso' else 'Baja' }}</strong>
+                    </div>
+                    <div class="progress progress-sm mt-2">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ 100 if atencion.estado | lower == 'cerrado' else 70 if atencion.estado | lower == 'proceso' else 40 }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="border rounded p-3">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">Responsable</small>
+                        <strong>{{ atencion.usuario.nombre_usuario }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-muted">Última hora</small>
+                        <strong>{{ mensajes[-1].hora if mensajes else atencion.fecha_registro.strftime('%d/%m %H:%M') }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-main">
+        <div class="chat-header">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-start">
+                <div>
+                    <small class="text-muted">Chat activo</small>
+                    <h4 class="mb-1">Ticket #{{ atencion.id_atencion }}</h4>
+                    <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                        <span class="badge bg-secondary">{{ atencion.tipo_solicitud }}</span>
+                        <span class="badge bg-info text-dark">Prioridad: {{ atencion.prioridad }}</span>
+                        {% if atencion.estado | lower == 'abierto' %}
+                            <span class="badge bg-success">Abierto</span>
+                        {% elif atencion.estado | lower == 'proceso' %}
+                            <span class="badge bg-warning text-dark">En proceso</span>
+                        {% else %}
+                            <span class="badge bg-danger">Cerrado</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted mb-0">{{ atencion.descripcion }}</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    {% if can_manage_atenciones %}
+                        <a href="/atencion_cliente/editar/{{ atencion.id_atencion }}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="/atencion_cliente/eliminar/{{ atencion.id_atencion }}" class="btn btn-danger btn-sm">Eliminar</a>
+                    {% endif %}
+                    <a href="/atencion_cliente/" class="btn btn-primary btn-sm">Volver</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-body">
+            {% for mensaje in mensajes %}
+                {% set is_cliente = mensaje['remitente'] == 'cliente' %}
+                {% set message_class = 'message-client' if is_cliente else 'message-agent' %}
+                <div class="{{ message_class }}">
+                    <div class="message-content">
+                        {% if edit_message_id and edit_message_id == mensaje['id_mensaje'] %}
+                            <form method="POST" action="/atencion_cliente/mensaje/actualizar">
+                                <input type="hidden" name="id_atencion" value="{{ atencion.id_atencion }}">
+                                <input type="hidden" name="id_mensaje" value="{{ mensaje['id_mensaje'] }}">
+                                <textarea name="mensaje" class="form-control mb-2" rows="3">{{ mensaje['mensaje'] }}</textarea>
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="/atencion_cliente/chat/{{ atencion.id_atencion }}" class="btn btn-sm btn-outline-secondary">Cancelar</a>
+                                    <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div>{{ mensaje['mensaje'] }}</div>
+                                {% if not is_cliente and can_delete_messages %}
+                                    <div class="d-flex gap-1">
+                                        <a href="/atencion_cliente/chat/{{ atencion.id_atencion }}?edit_id={{ mensaje['id_mensaje'] }}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                                        <a href="/atencion_cliente/mensaje/eliminar/{{ mensaje['id_mensaje'] }}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-muted">{{ mensaje['hora'] }}</small>
+                                {% if not is_cliente %}
+                                    {% if mensaje['status'] == 'failed' %}
+                                        <span class="badge bg-danger">Error</span>
+                                    {% elif mensaje['status'] == 'sent' %}
+                                        <span class="badge bg-success">Enviado</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Recibido</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="chat-footer">
+            {% if atencion.estado | lower == 'cerrado' %}
+                <div class="alert alert-danger mb-0">Esta atención está cerrada. No se pueden enviar mensajes.</div>
+            {% else %}
+                <form method="POST" action="/atencion_cliente/enviar">
+                    <input type="hidden" name="id_atencion" value="{{ atencion.id_atencion }}">
+                    <div class="input-group">
+                        <input type="text" name="mensaje" class="form-control" placeholder="Escriba un mensaje..." required>
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Enviar</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

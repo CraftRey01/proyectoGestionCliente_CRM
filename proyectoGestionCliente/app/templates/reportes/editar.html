@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Reporte{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Modificar Reporte</h4>
+            </div>
+
+            <div class="card-body">
+                <form action="/reportes/editar/{{ reporte.id_reporte }}" method="POST">
+
+                    <div class="mb-3">
+                        <label for="id_reporte" class="form-label">ID Reporte</label>
+                        <input type="number" class="form-control" id="id_reporte" name="nuevo_id_reporte"
+                            value="{{ reporte.id_reporte }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tipo_reporte" class="form-label">Tipo de Reporte</label>
+                        <select class="form-control" id="tipo_reporte" name="tipo_reporte" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="campaña" {% if reporte.tipo_reporte=='campaña' %}selected{% endif %}>Campaña
+                            </option>
+                            <option value="venta" {% if reporte.tipo_reporte=='venta' %}selected{% endif %}>Venta
+                            </option>
+                            <option value="general" {% if reporte.tipo_reporte=='general' %}selected{% endif %}>General
+                            </option>
+                            <option value="oportunidad" {% if reporte.tipo_reporte=='oportunidad' %}selected{% endif %}>
+                                Oportunidad</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="periodo" class="form-label">Periodo</label>
+                        <input type="text" class="form-control" id="periodo" name="periodo"
+                            value="{{ reporte.periodo }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fecha_generacion" class="form-label">Fecha de Generación</label>
+                        <input type="datetime-local" class="form-control" id="fecha_generacion" name="fecha_generacion"
+                            value="{{ reporte.fecha_generacion.strftime('%Y-%m-%dT%H:%M') if reporte.fecha_generacion else '' }}"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formato" class="form-label">Formato</label>
+                        <select class="form-control" id="formato" name="formato" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="web" {% if reporte.formato=='web' %}selected{% endif %}>Web </option>
+                            <option value="pdf" {% if reporte.formato=='pdf' %}selected{% endif %}>PDF</option>
+                            <option value="imagen" {% if reporte.formato=='imagen' %}selected{% endif %}>Imagen</option>
+                            <option value="svg" {% if reporte.formato=='svg' %}selected{% endif %}>SVG</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="resumen" class="form-label">Resumen</label>
+                        <textarea class="form-control" id="resumen" name="resumen"
+                            rows="4">{{ reporte.resumen }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tipo_grafico" class="form-label">Tipo de Gráfico</label>
+                        <input type="text" class="form-control" id="tipo_grafico" name="tipo_grafico"
+                            value="{{ reporte.tipo_grafico }}" required>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/reportes/" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            Actualizar Cambios
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

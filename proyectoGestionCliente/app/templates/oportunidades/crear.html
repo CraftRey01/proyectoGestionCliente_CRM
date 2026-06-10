@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Crear Oportunidad{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Nueva Oportunidad</h4>
+            </div>
+            <div class="card-body">
+                <form action="nuevo" method="POST">
+                    <div class="mb-3">
+                        <label for="id_oportunidad" class="form-label">Id Oportunidad</label>
+                        <input type="number" class="form-control" id="id_oportunidad" name="id_oportunidad" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripcion</label>
+                        <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="monto_estimado" class="form-label">Monto Estimado</label>
+                        <input type="number" step="0.01" class="form-control" id="monto_estimado" name="monto_estimado"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="" selected disabled>Seleccionar Estado</option>
+                            <option value="abierta">Abierta</option>
+                            <option value="en proceso">En Proceso</option>
+                            <option value="cerrada">Cerrada</option>
+                            <option value="perdida">Perdida</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_cliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="id_cliente" name="id_cliente" required>
+                            <option value="" selected disabled>Cliente</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.id_cliente }}">{{ cliente.nombre_cliente }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_usuario" class="form-label">Usuario(Vendedor) Encargado</label>
+                        <select class="form-select" id="id_usuario" name="id_usuario" required>
+                            <option value="" selected disabled>Seleccione un usuario</option>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario.id_usuario }}">{{ usuario.nombre_usuario }} ({{ usuario.rol }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="../oportunidades" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Guardar Registro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

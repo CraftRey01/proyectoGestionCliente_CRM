@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Editar Usuario{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Modificar Usuario</h4>
+            </div>
+            <div class="card-body">
+                <form action="/usuarios/editar/{{ usuario.id_usuario }}" method="POST">
+                    <div class="mb-3">
+                        <label for="id_usuario" class="form-label">Id Usuario</label>
+                        <input type="number" class="form-control" id="id_usuario" name="id_usuario_form"
+                            value="{{ usuario.id_usuario }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre_usuario" class="form-label">Nombre Usuario</label>
+                        <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario"
+                            value="{{ usuario.nombre_usuario }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contrasena" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="contrasena" name="contrasena"
+                                placeholder="Dejar en blanco para mantener la contraseña actual" autocomplete="new-password">
+                            <button type="button" class="btn btn-outline-secondary" id="togglePassword">Mostrar</button>
+                        </div>
+                        <div class="form-text">Contraseña oculta para seguridad. Dejar en blanco para mantener la existente.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rol" class="form-label">Rol</label>
+                        <input type="text" class="form-control" id="rol" name="rol" value="{{ usuario.rol }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <input type="text" class="form-control" id="estado" name="estado" value="{{ usuario.estado }}"
+                            required>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/usuarios" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const togglePasswordButton = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('contrasena');
+
+    if (togglePasswordButton && passwordField) {
+        togglePasswordButton.addEventListener('click', function() {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
+        });
+    }
+</script>
+{% endblock %}

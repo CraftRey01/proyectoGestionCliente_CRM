@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}Lista de Campanias{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="text-white">Campañas</h1>
+    <div>
+        <a href="nuevo" class="btn btn-primary me-2">Nueva Campaña</a>
+        <button type="button" id="automatizar-todas-campanias" class="btn btn-success">Automatizar siguiente
+            campaña</button>
+    </div>
+</div>
+
+<!-- Carousel -->
+<div id="campCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#campCarousel" data-bs-slide-to="0" class="active" aria-current="true"
+            aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#campCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#campCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button type="button" data-bs-target="#campCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+        <button type="button" data-bs-target="#campCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+        <button type="button" data-bs-target="#campCarousel" data-bs-slide-to="5" aria-label="Slide 6"></button>
+    </div>
+
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="/static/img/camp1.jpg" class="d-block w-100 rounded" alt="Camp 1">
+        </div>
+        <div class="carousel-item">
+            <img src="/static/img/camp2.jpg" class="d-block w-100 rounded" alt="Camp 2">
+        </div>
+        <div class="carousel-item">
+            <img src="/static/img/camp3.jpg" class="d-block w-100 rounded" alt="Camp 3">
+        </div>
+        <div class="carousel-item">
+            <img src="/static/img/camp4.jpg" class="d-block w-100 rounded" alt="Camp 4">
+        </div>
+        <div class="carousel-item">
+            <img src="/static/img/camp5.jpg" class="d-block w-100 rounded" alt="Camp 5">
+        </div>
+        <div class="carousel-item">
+            <img src="/static/img/camp6.jpg" class="d-block w-100 rounded" alt="Camp 6">
+        </div>
+    </div>
+</div>
+
+<!-- Grid container -->
+<!-- Dashboard Summary Cards -->
+<div class="row gy-3 mb-4">
+    <div class="col-md-4">
+        <div class="summary-card gradient-summary-card p-4">
+            <div class="summary-card-title">Total de campañas activas</div>
+            <div class="summary-card-value">{{ total_activas }}</div>
+            <div class="summary-card-meta">Campañas vigentes en el sistema.</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="summary-card gradient-summary-card p-4">
+            <div class="summary-card-title">Campañas por tipo</div>
+            <div class="summary-card-value">{{ tipos|length }}</div>
+            <div class="summary-card-meta">{{ tipos.keys()|list|join(", ") if tipos else "Sin categorías" }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="summary-card gradient-summary-card p-4">
+            <div class="summary-card-title">Campañas eliminadas</div>
+            <div class="summary-card-value">{{ campanias_eliminadas|length }}</div>
+            <div class="summary-card-meta">Campañas inactivas o archivadas.</div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Campaña</th>
+                        <th>Tipo</th>
+                        <th>Clientes</th>
+                        <th>Período</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if campanias_activas %}
+                    {% for elemento in campanias_activas %}
+                    <tr>
+                        <td>{{ elemento.id_campania }}</td>
+                        <td>{{ elemento.nombre_campania }}</td>
+                        <td>{{ elemento.tipo_campania }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-info">{{ elemento.clientes|length }}</span>
+                        </td>
+                        <td>{{ elemento.fecha_inicio }} a {{ elemento.fecha_finalizacion }}</td>
+                        <td><span class="badge bg-success">Activo</span></td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                {% if can_view_clients and elemento.clientes|length > 0 %}
+                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal"
+                                    data-bs-target="#clientesCampaniaModal"
+                                    data-campania-nombre="{{ elemento.nombre_campania }}"
+                                    data-campania-id="{{ elemento.id_campania }}"
+                                    data-campania-resultado="{{ elemento.resultado_obtenido }}"
+                                    onclick="cargarClientesCampania({{ elemento.id_campania }}, this)">Ver
+                                    Clientes</button>
+                                {% elif elemento.clientes|length == 0 %}
+                                <span class="text-muted small">Sin clientes</span>
+                                {% endif %}
+                                <a href="editar/{{ elemento.id_campania }}" class="btn btn-sm btn-warning">Editar</a>
+                                <a href="eliminar/{{ elemento.id_campania }}" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('¿Seguro que deseas eliminar esta campaña?');">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-3">No hay campañas activas.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if campanias_eliminadas %}
+<div class="card shadow-sm">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Campañas Eliminadas</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Campaña</th>
+                        <th>Tipo</th>
+                        <th>Período</th>
+                        <th>Resultado</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for elemento in campanias_eliminadas %}
+                    <tr>
+                        <td>{{ elemento.id_campania }}</td>
+                        <td>{{ elemento.nombre_campania }}</td>
+                        <td>{{ elemento.tipo_campania }}</td>
+                        <td>{{ elemento.fecha_inicio }} a {{ elemento.fecha_finalizacion }}</td>
+                        <td><span class="badge bg-danger">Eliminado</span></td>
+                        <td class="text-center">
+                            <a href="/campanias/restaurar/{{ elemento.id_campania }}" class="btn btn-sm btn-success"
+                                onclick="return confirm('¿Deseas restaurar esta campaña?');">Restaurar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="mt-3">
+    <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+</div>
+
+<!-- Modal de Clientes Asignados a Campaña -->
+<div class="modal fade" id="clientesCampaniaModal" tabindex="-1" aria-labelledby="clientesCampaniaModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clientesCampaniaModalLabel">Clientes Asignados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Campaña:</strong>
+                    <p id="modal-campania-nombre"></p>
+                </div>
+                <div id="modal-clientes-list">
+                    <p class="text-muted">Cargando...</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Resultado Obtenido:</strong>
+                    <p id="modal-campania-resultado"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function cargarClientesCampania(id_campania, button) {
+        const campaniaNombre = button.dataset.campaniaNombre;
+        document.getElementById('modal-campania-nombre').textContent = campaniaNombre;
+        document.getElementById('modal-clientes-list').innerHTML = '<p class="text-muted">Cargando...</p>';
+        document.getElementById('modal-campania-resultado').textContent = button.dataset.campaniaResultado;
+
+        try {
+            const response = await fetch(`/campanias/api/clientes/${id_campania}`);
+            if (!response.ok) {
+                document.getElementById('modal-clientes-list').innerHTML = '<p class="text-danger">Error al cargar clientes.</p>';
+                return;
+            }
+
+            const data = await response.json();
+            const clientes = data.clientes || [];
+
+            if (clientes.length === 0) {
+                document.getElementById('modal-clientes-list').innerHTML = '<p class="text-muted">No hay clientes asignados.</p>';
+                return;
+            }
+
+            let html = '<div class="table-responsive"><table class="table table-sm table-striped"><thead class="table-light"><tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Segmento</th></tr></thead><tbody>';
+
+            clientes.forEach(cliente => {
+                const segmentoBadge = cliente.segmento === 'VIP' ? 'bg-warning text-dark' : cliente.segmento === 'Frecuente' ? 'bg-info' : cliente.segmento === 'Regular' ? 'bg-secondary' : 'bg-light text-dark';
+
+                html += `<tr>
+                    <td>${cliente.nombre}</td>
+                    <td>${cliente.telefono}</td>
+                    <td>${cliente.correo}</td>
+                    <td><span class="badge ${segmentoBadge}">${cliente.segmento}</span></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+            document.getElementById('modal-clientes-list').innerHTML = html;
+        } catch (error) {
+            document.getElementById('modal-clientes-list').innerHTML = '<p class="text-danger">Error: ' + error.message + '</p>';
+        }
+    }
+</script>
+
+<!-- FOOTER CRM TECNOVA -->
+<footer style="background:#94949441;color:#fff;">
+    <div class="container-fluid py-4">
+        <div class="row g-4 align-items-start">
+            <!-- UBICACION -->
+            <div class="col-lg-5 col-md-12">
+                <h5 class="fw-bold mb-3 text-white">
+                    <i class="fa-solid fa-location-dot me-2"></i>
+                    Ubicación Empresarial
+                </h5>
+                <div style="border-radius:12px;overflow:hidden;
+                box-shadow:0 5px 15px rgba(0,0,0,.35);">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d402.0864110729485!2d-68.08611466031245!3d-16.510330644831683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x915f218c5012bbf7%3A0x3155b28dd75ca953!2sEdificio%20Caliope!5e0!3m2!1ses-419!2sbo!4v1780762625958!5m2!1ses-419!2sbo"
+                        width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}
+Atención al Cliente
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/inicio.css">
+{% endblock %}
+
+{% block content %}
+<div class="atencion-list-page">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1 text-white">Atencion Cliente</h1>
+            <p class=" text-info">Selecciona un cliente para abrir su conversación.</p>
+        </div>
+        <a href="/atencion_cliente/nuevo" class="btn btn-primary">+ Nueva atención</a>
+    </div>
+
+    <div class="row gy-3">
+        {% if atenciones %}
+            {% for ticket in atenciones %}
+                {% set prev = previews.get(ticket.id_atencion) if previews else None %}
+                {% set progreso = 40 if ticket.estado | lower == 'abierto' else 70 if ticket.estado | lower == 'proceso' else 100 %}
+                {% set satisfaccion = 'Baja' if ticket.estado | lower == 'abierto' else 'Media' if ticket.estado | lower == 'proceso' else 'Alta' %}
+                <div class="col-12">
+                    <div class="card conversation-card conversation-card-clickable text-body" onclick="window.location.href='/atencion_cliente/chat/{{ ticket.id_atencion }}'" role="button">
+                        <div class="card-body conversation-card-body">
+                            <div class="avatar-circle bg-secondary text-white">{{ ticket.cliente.nombre_cliente[:2] | upper }}</div>
+                            <div class="flex-fill ticket-details">
+                                <div class="d-flex flex-column flex-lg-row justify-content-between gap-2 align-items-start">
+                                    <div>
+                                        <h5 class="mb-1">{{ ticket.cliente.nombre_cliente }}</h5>
+                                        <p class="mb-1 text-muted">{{ ticket.tipo_solicitud }}</p>
+                                    </div>
+                                    <div class="ticket-actions d-flex flex-column align-items-lg-end gap-2">
+                                        <div class="text-end status-wrap">
+                                            {% if ticket.estado | lower == 'abierto' %}
+                                                <span class="badge bg-success">Abierto</span>
+                                            {% elif ticket.estado | lower == 'proceso' %}
+                                                <span class="badge bg-warning text-dark">En proceso</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Cerrado</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if can_manage_atenciones %}
+                                            <a href="/atencion_cliente/eliminar/{{ ticket.id_atencion }}" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation()">Eliminar</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <p class="mb-2 text-muted">{{ prev['mensaje'] if prev else 'Sin mensajes todavía.' }}</p>
+                                <div class="ticket-meta d-flex flex-wrap gap-3 align-items-center small text-muted mb-2">
+                                    {% if prev %}
+                                        <span>{{ prev['hora'] }}</span>
+                                    {% else %}
+                                        <span>Sin actividad reciente</span>
+                                    {% endif %}
+                                    <span>Progreso {{ progreso }}%</span>
+                                    <span>Satisfacción {{ satisfaccion }}</span>
+                                </div>
+                                <div class="progress progress-sm mb-0">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: {{ progreso }}%;" aria-valuenow="{{ progreso }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-secondary mb-0">No hay atenciones disponibles.</div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if atenciones_eliminadas and can_manage_atenciones %}
+        <div class="mt-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="mb-1 text-white">Atenciones eliminadas</h5>
+                    <small class="text-white">Solo administrador y soporte pueden restaurar.</small>
+                </div>
+            </div>
+            <div class="row gy-3">
+                {% for ticket in atenciones_eliminadas %}
+                    <div class="col-12">
+                        <div class="card conversation-card text-body">
+                            <div class="card-body conversation-card-body">
+                                <div class="avatar-circle bg-secondary text-white">{{ ticket.cliente.nombre_cliente[:2] | upper }}</div>
+                                <div class="flex-fill ticket-details">
+                                    <div class="d-flex flex-column flex-lg-row justify-content-between gap-2 align-items-start">
+                                        <div>
+                                            <h5 class="mb-1">{{ ticket.cliente.nombre_cliente }}</h5>
+                                            <p class="mb-1 text-muted">{{ ticket.tipo_solicitud }}</p>
+                                        </div>
+                                        <div class="ticket-actions text-end">
+                                            <span class="badge bg-secondary">Eliminado</span>
+                                        </div>
+                                    </div>
+                                    <p class="mb-2 text-muted">{{ ticket.descripcion or 'Sin descripción' }}</p>
+                                    <div class="ticket-meta d-flex flex-wrap gap-3 align-items-center small text-muted">
+                                        <span>ID {{ ticket.id_atencion }}</span>
+                                        <span>Responsable {{ ticket.usuario.nombre_usuario }}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <a href="/atencion_cliente/restaurar/{{ ticket.id_atencion }}" class="btn btn-sm btn-outline-success">Restaurar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

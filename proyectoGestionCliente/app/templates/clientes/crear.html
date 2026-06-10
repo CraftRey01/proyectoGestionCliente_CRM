@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Crear Cliente{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Nuevo Cliente</h4>
+            </div>
+            <div class="card-body">
+                <form action="nuevo" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">ID Cliente</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="id_cliente"
+                            required
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Registro</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="fecha_registro"
+                            value="{{ fecha_registro }}"
+                            min="1909-01-01"
+                            max="2028-12-31"
+                            required
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="nombre_cliente"
+                            required
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="telefono"
+                            required
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correo</label>
+                        <input
+                            type="email"
+                            class="form-control"
+                            name="correo"
+                            required
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Segmento</label>
+                        <select name="segmento_cliente" class="form-select" required>
+                            <option value="Nuevo">Nuevo</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Frecuente">Frecuente</option>
+                            <option value="VIP">VIP</option>
+                            <option value="Corporativo">Corporativo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Foto Cliente
+                        </label>
+                        <input
+                            type="file"
+                            class="form-control"
+                            name="foto_cliente"
+                            accept="image/*"
+                        >
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="../clientes" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            Guardar Registro
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

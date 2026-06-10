@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}Notificaciones{% endblock %}
+{% block content %}
+<div class="report-page-header mb-4">
+    <div>
+        <h1 class="text-white">Notificaciones</h1>
+        <p class="text-info">Mensajes enviados o pendientes. La burbuja de notificaciones cuenta solo los mensajes cuyo
+            estado es "enviado".</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/notificaciones/nuevo" class="btn btn-primary">Nuevo mensaje</a>
+    </div>
+</div>
+<div class="row gy-4">
+    <div class="col-12">
+        <div class="dashboard-summary-grid">
+            <div class="summary-card gradient-summary-card p-4">
+                <div class="summary-card-title">Total de notificaciones</div>
+                <div class="summary-card-value">{{ notificaciones|length }}</div>
+                <div class="summary-card-meta">Mensajes activos en el sistema.</div>
+            </div>
+            <div class="summary-card gradient-summary-card p-4">
+                <div class="summary-card-title">Mensajes enviados</div>
+                <div class="summary-card-value">{{ notificacion_count or 0 }}</div>
+                <div class="summary-card-meta">Solo los mensajes marcados como enviado.</div>
+            </div>
+            <div class="summary-card gradient-summary-card p-4">
+                <div class="summary-card-title">Mensajes pendientes</div>
+                <div class="summary-card-value">{{ notificaciones_pendientes|length }}</div>
+                <div class="summary-card-meta">Mensajes con otro estado distinto a enviado.</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card report-card p-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>    
+                    <h2 class="fs-5 mb-1; text-white">Mensajes enviados</h2>
+                    <p class="text-muted mb-0">
+                        Esta lista muestra solo los mensajes en estado enviado.
+                    </p>
+                </div>
+            </div>
+            {% if notificaciones_enviadas %}
+            <div class="accordion accordion-flush" id="accordionMensajes">
+                {% for mensaje in notificaciones_enviadas %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button collapsed" style="background-color: #e8ddf5" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false"
+                            aria-controls="collapse{{ loop.index }}">
+
+                            {{ mensaje.mensaje }}
+
+                        </button>
+                    </h2>
+
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse"
+                        aria-labelledby="heading{{ loop.index }}" data-bs-parent="#accordionMensajes">
+
+                        <div class="accordion-body">
+
+                            <div class="mb-2">
+                                <strong>Tipo:</strong>
+                                {{ mensaje.tipo_notificacion }}
+                            </div>
+
+                            <div class="mb-2">
+                                <strong>Fecha de envío:</strong>
+                                {{ mensaje.fecha_envio.strftime('%Y-%m-%d %H:%M') if mensaje.fecha_envio else '-' }}
+                            </div>
+
+                            <div class="mb-2">
+                                <strong>Estado:</strong>
+                                <span class="badge bg-success">
+                                    Enviado
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-secondary mb-0">
+                No hay mensajes enviados aún.
+            </div>
+
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Lista de Notificaciones </h5>
+        </div>
+        <div class="card report-card p-4">
+            {% if notificaciones %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha envío</th>
+                            <th>Estado</th>
+                            <th>Tipo</th>
+                            <th>Mensaje</th>
+                            <th>Usuario</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for notificacion in notificaciones %}
+                        <tr>
+                            <td>{{ notificacion.id_notificacion }}</td>
+                            <td>{{ notificacion.fecha_envio.strftime('%Y-%m-%d %H:%M') if notificacion.fecha_envio else
+                                '-' }}</td>
+                            <td>
+                                <span
+                                    class="badge {% if notificacion.estado == 'enviado' %}bg-success{% elif notificacion.estado == 'pendiente' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                    {{ notificacion.estado }}
+                                </span>
+                            </td>
+                            <td>{{ notificacion.tipo_notificacion }}</td>
+                            <td class="text-truncate" style="max-width: 320px;">{{ notificacion.mensaje }}</td>
+                            <td>
+                                {% if notificacion.usuario %}
+                                {{ notificacion.usuario.nombre_usuario }}
+                                {% else %}
+                                ID Usuario: {{ notificacion.id_usuario }}
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="/notificaciones/editar/{{ notificacion.id_notificacion }}"
+                                    class="btn btn-sm btn-warning me-1">Editar</a>
+                                <a href="/notificaciones/eliminar/{{ notificacion.id_notificacion }}"
+                                    class="btn btn-sm btn-danger">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-secondary mb-0">No hay notificaciones activas en este momento.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if notificaciones_eliminadas %}
+    <div class="col-12">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Notificaciones Eliminadas</h5>
+        </div>
+        <div class="card report-card p-4">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha envío</th>
+                            <th>Estado</th>
+                            <th>Tipo</th>
+                            <th>Mensaje</th>
+                            <th>Usuario</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for notificacion in notificaciones_eliminadas %}
+                        <tr>
+                            <td>{{ notificacion.id_notificacion }}</td>
+                            <td>{{ notificacion.fecha_envio.strftime('%Y-%m-%d %H:%M') if notificacion.fecha_envio else
+                                '-' }}</td>
+                            <td>
+                                <span class="badge bg-secondary">eliminado</span>
+                            </td>
+                            <td>{{ notificacion.tipo_notificacion }}</td>
+                            <td class="text-truncate" style="max-width: 320px;">{{ notificacion.mensaje }}</td>
+                            <td>
+                                {% if notificacion.usuario %}
+                                {{ notificacion.usuario.nombre_usuario }}
+                                {% else %}
+                                ID Usuario: {{ notificacion.id_usuario }}
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="/notificaciones/restaurar/{{ notificacion.id_notificacion }}"
+                                    class="btn btn-sm btn-success">Restaurar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

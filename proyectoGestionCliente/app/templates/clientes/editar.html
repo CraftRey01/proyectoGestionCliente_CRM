@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Editar Cliente{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Modificar Cliente</h4>
+            </div>
+
+            <div class="card-body">
+
+                <form action="/clientes/editar/{{ cliente.id_cliente }}" method="POST" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            ID Cliente
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="id_cliente_form"
+                            value="{{ cliente.id_cliente }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Nombre
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="nombre_cliente"
+                            value="{{ cliente.nombre_cliente }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Teléfono
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="telefono"
+                            value="{{ cliente.telefono }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Correo
+                        </label>
+
+                        <input
+                            type="email"
+                            class="form-control"
+                            name="correo"
+                            value="{{ cliente.correo }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Segmento
+                        </label>
+                        <select name="segmento_cliente" class="form-select" required>
+                            <option value="Nuevo" {% if cliente.segmento_cliente == 'Nuevo' %}selected{% endif %}>Nuevo</option>
+                            <option value="Regular" {% if cliente.segmento_cliente == 'Regular' %}selected{% endif %}>Regular</option>
+                            <option value="Frecuente" {% if cliente.segmento_cliente == 'Frecuente' %}selected{% endif %}>Frecuente</option>
+                            <option value="VIP" {% if cliente.segmento_cliente == 'VIP' %}selected{% endif %}>VIP</option>
+                            <option value="Corporativo" {% if cliente.segmento_cliente == 'Corporativo' %}selected{% endif %}>Corporativo</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Foto Cliente actual
+                        </label>
+
+                        <div class="mb-2">
+                            <img
+                                src="/static/img/{{ cliente.foto_cliente }}"
+                                width="100"
+                                height="100"
+                                style="object-fit: cover;"
+                            >
+                        </div>
+
+                        <label class="form-label">
+                            Subir nueva foto (opcional)
+                        </label>
+
+                        <input
+                            type="file"
+                            class="form-control"
+                            name="foto_cliente"
+                            accept="image/*"
+                        >
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Fecha Registro
+                        </label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="fecha_registro"
+                            value="{{ cliente.fecha_registro }}"
+                            min="1909-01-01"
+                            max="2028-12-31"
+                            required
+                        >
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+
+                        <a href="/clientes" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            Actualizar Cambios
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}
+Perfil - CRM
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-container d-flex justify-content-center mt-5">
+    <div class="card profile-card shadow" style="max-width: 920px; width: 100%;">
+        <div class="row g-0">
+            <div class="col-md-4 bg-light p-4 d-flex flex-column align-items-center text-center">
+                <img src="/static/img/perfil.png" class="card-img-top" alt="Perfil" style="width: 300px; height: 140px; object-fit: cover;">
+                <h4 class="fw-bold">{{ usuario.nombre_usuario or 'Usuario' }}</h4>
+                <p class="text-muted mb-1">{{ usuario.rol | title }}</p>
+                <span class="badge bg-success mb-3">Activo</span>
+                <div class="text-start w-100 mt-3">
+                    <p class="mb-2"><strong>Edad:</strong> {{ perfil_data.edad }}</p>
+                    <p class="mb-2"><strong>Nivel de educación:</strong> {{ perfil_data.nivel_educacion }}</p>
+                    <p class="mb-2"><strong>Idioma:</strong> {{ perfil_data.idioma }}</p>
+                    <p class="mb-2"><strong>Dispositivo:</strong> {{ perfil_data.dispositivo }}</p>
+                </div>
+                <button class="btn btn-outline-danger w-100 mt-auto" onclick="location.href='/logout'">Cerrar sesión</button>
+            </div>
+            <div class="col-md-8 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="card-title mb-1">Perfil personalizado</h5>
+                        <p class="text-muted mb-0">Información adaptada según tu rol dentro del CRM.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded shadow-sm h-100">
+                            <h6 class="mb-2">Redes sociales</h6>
+                            <div>
+                            {% for red in perfil_data.redes_sociales %}
+                                {% set r = red.lower() %}
+                                {% if 'whatsapp' in r %}
+                                    <a class="me-2" href="#" title="WhatsApp"> <i class="bi bi-whatsapp fs-3 text-success"></i></a>
+                                {% elif 'facebook' in r %}
+                                    <a class="me-2" href="#" title="Facebook"><i class="bi bi-facebook fs-4 text-primary"></i></a>
+                                {% elif 'instagram' in r %}
+                                    <a class="me-2" href="#" title="Instagram"><i class="bi bi-instagram fs-4 text-danger"></i></a>
+                                {% elif 'linkedin' in r %}
+                                    <a class="me-2" href="#" title="LinkedIn"><i class="bi bi-linkedin fs-4 text-primary"></i></a>
+                                {% elif 'correo' in r or 'email' in r or 'mail' in r %}
+                                    <a class="me-2" href="#" title="Email"><i class="bi bi-envelope-fill fs-4 text-secondary"></i></a>
+                                {% else %}
+                                    <span class="badge bg-secondary me-1 mb-1">{{ red }}</span>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded shadow-sm h-100">
+                            <h6 class="mb-2">Objetivo principal</h6>
+                            <p class="mb-0">{{ perfil_data.objetivo }}</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded shadow-sm h-100">
+                            <h6 class="mb-2">Labores que realiza</h6>
+                            <p class="mb-0">{{ perfil_data.labores }}</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded shadow-sm h-100">
+                            <h6 class="mb-2">Herramientas de trabajo</h6>
+                            <p class="mb-0">{{ perfil_data.herramientas }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-3 bg-white rounded shadow-sm h-100">
+                            <h6 class="mb-2">Resumen del perfil</h6>
+                            <p class="mb-0">Como <strong>{{ usuario.rol | title }}</strong>, este perfil te muestra las responsabilidades, herramientas y objetivos más habituales para tu tipo de usuario.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Editar Notificacion{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Modificar Notificacion</h4>
+            </div>
+            <div class="card-body">
+                <form action="/notificaciones/editar/{{ notificacion.id_notificacion }}" method="POST">
+                    <div class="mb-3">
+                        <label for="id_notificacion" class="form-label">ID Notificacion</label>
+                        <input type="number" class="form-control" id="id_notificacion" name="id_notificacion"
+                            value="{{ notificacion.id_notificacion }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_usuario" class="form-label">ID Usuario</label>
+                        <input type="number" class="form-control" id="id_usuario" name="id_usuario"
+                            value="{{ notificacion.id_usuario }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mensaje</label>
+                        <textarea name="mensaje" class="form-control" rows="4"
+                            required>{{ notificacion.mensaje }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipo_notificacion" class="form-label">Tipo Notificacion</label>
+                        <input type="text" class="form-control" id="tipo_notificacion" name="tipo_notificacion"
+                            value="{{ notificacion.tipo_notificacion }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <select name="estado" class="form-select" required>
+                            <option value="enviado" {% if notificacion.estado=='enviado' %}selected{% endif %}>enviado
+                            </option>
+                            <option value="pendiente" {% if notificacion.estado=='pendiente' %}selected{% endif %}>
+                                pendiente
+                            </option>
+                            <option value="fallido" {% if notificacion.estado=='fallido' %}selected{% endif %}>fallido
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de envío</label>
+                        <input type="datetime-local" name="fecha_envio" class="form-control"
+                            value="{{ notificacion.fecha_envio.strftime('%Y-%m-%dT%H:%M') if notificacion.fecha_envio else '' }}"
+                            required>
+                    </div>
+
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/notificaciones" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Crear Atencion Cliente{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Nuevo Atencion Cliente</h4>
+            </div>
+            <div class="card-body">
+                <form action="nuevo" method="POST">
+                    <div class="mb-3">
+                        <label for="id_atencion" class="form-label">Id Atencion</label>
+                        <input type="number" class="form-control" id="id_atencion" name="id_atencion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_registro" class="form-label">Fecha Registro</label>
+                        <input type="datetime-local" class="form-control" id="fecha_registro" name="fecha_registro"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipo_solicitud" class="form-label">Tipo Solicitud</label>
+                        <select class="form-select" id="tipo_solicitud" name="tipo_solicitud" required>
+                            <option value="consulta" {% if atencion_cliente is defined and
+                                atencion_cliente.tipo_solicitud=='consulta' %}selected{% endif %}>
+                                Consulta
+                            </option>
+                            <option value="reclamo" {% if atencion_cliente is defined and
+                                atencion_cliente.tipo_solicitud=='reclamo' %}selected{% endif %}>
+                                Reclamo
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripcion</label>
+                        <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado de Atencion</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="" selected disabled>Seleccionar Estado</option>
+                            <option value="abierto">Abierto</option>
+                            <option value="proceso">En Proceso</option>
+                            <option value="cerrado">Cerrado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prioridad" class="form-label">Prioridad</label>
+                        <select class="form-control" id="prioridad" name="prioridad" required>
+                            <option value="Baja">Baja</option>
+                            <option value="Media">Media</option>
+                            <option value="Alta">Alta</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_cliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="id_cliente" name="id_cliente" required>
+                            <option value="" selected disabled>Cliente</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.id_cliente }}">{{ cliente.nombre_cliente }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_usuario" class="form-label">Usuario(Soporte) Encargado</label>
+                        <select class="form-select" id="id_usuario" name="id_usuario" required>
+                            <option value="" selected disabled>Seleccione un usuario</option>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario.id_usuario }}">{{ usuario.nombre_usuario }} ({{ usuario.rol }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="../atencion_cliente" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Guardar Registro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

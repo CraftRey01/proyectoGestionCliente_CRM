@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Editar Cotizacion{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Modificar Cotizacion</h4>
+            </div>
+            <div class="card-body">
+                <form action="/cotizaciones/editar/{{ cotizacion.id_cotizacion }}" method="POST">
+                    <div class="mb-3">
+                        <label for="id_cotizacion" class="form-label">Id Cotizacion</label>
+                        <input type="number" class="form-control" id="id_cotizacion" name="id_cotizacion"
+                            value="{{ cotizacion.id_cotizacion }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_cotizacion" class="form-label">Fecha Cotizacion</label>
+                        <input type="date" class="form-control" id="fecha_cotizacion" name="fecha_cotizacion"
+                            value="{{ cotizacion.fecha_cotizacion }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="monto_estimado" class="form-label">Monto Estimado</label>
+                        <input type="number" step="0.01" class="form-control" id="monto_estimado" name="monto_estimado"
+                            value="{{ cotizacion.monto_estimado }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="aprobada" {% if cotizacion.estado=='aprobada' %}selected{% endif %}>Aprobada
+                            </option>
+                            <option value="pendiente" {% if cotizacion.estado=='pendiente' %}selected{% endif %}>
+                                Pendiente</option>
+                            <option value="rechazada" {% if cotizacion.estado=='rechazada' %}selected{% endif %}>
+                                Rechazada
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_cliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="id_cliente" name="id_cliente" required>
+                            <option value="" disabled>Seleccione un cliente</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.id_cliente }}" {% if cliente.id_cliente==cotizacion.id_cliente
+                                %}selected{% endif %}>
+                                {{ cliente.nombre_cliente }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/cotizaciones" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

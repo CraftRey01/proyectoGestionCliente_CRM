@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Crear Pedido{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Nuevo Pedido</h4>
+            </div>
+            <div class="card-body">
+                <form action="nuevo" method="POST">
+                    <div class="mb-3">
+                        <label for="id_pedido" class="form-label">Id Pedido</label>
+                        <input type="number" class="form-control" id="id_pedido" name="id_pedido" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_pedido" class="form-label">Fecha Pedido</label>
+                        <input type="datetime-local" class="form-control" id="fecha_pedido" name="fecha_pedido"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado de Pedido</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="" selected disabled>Seleccionar Estado</option>
+                            <option value="confirmado">Confirmado</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_venta" class="form-label">Id Venta</label>
+                        <input type="number" class="form-control" id="id_venta" name="id_venta" required>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="../pedidos" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Guardar Registro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Crear Usuario{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Nuevo Usuario</h4>
+            </div>
+            <div class="card-body">
+                <form action="nuevo" method="POST">
+                    <div class="mb-3">
+            <label for="id_usuario" class="form-label">Id Usuario</label>
+            <input type="number" class="form-control" id="id_usuario" name="id_usuario" required>
+        </div>
+        <div class="mb-3">
+            <label for="nombre_usuario" class="form-label">Nombre Usuario</label>
+            <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" required>
+        </div>
+        <div class="mb-3">
+            <label for="contrasena" class="form-label">Contraseña</label>
+            <div class="input-group">
+                <input type="password" class="form-control" id="contrasena" name="contrasena" autocomplete="new-password" required>
+                <button type="button" class="btn btn-outline-secondary" id="togglePasswordCrear">Mostrar</button>
+            </div>
+            <div class="form-text">La contraseña se guarda oculta y solo los administradores deben manejarla.</div>
+        </div>
+        <div class="mb-3">
+            <label for="rol" class="form-label">Rol</label>
+            <input type="text" class="form-control" id="rol" name="rol" required>
+        </div>
+        <div class="mb-3">
+            <label for="estado" class="form-label">Estado</label>
+            <input type="text" class="form-control" id="estado" name="estado" required>
+        </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="../usuarios" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Guardar Registro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const togglePasswordCrear = document.getElementById('togglePasswordCrear');
+    const passwordFieldCrear = document.getElementById('contrasena');
+
+    if (togglePasswordCrear && passwordFieldCrear) {
+        togglePasswordCrear.addEventListener('click', function() {
+            const type = passwordFieldCrear.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordFieldCrear.setAttribute('type', type);
+            this.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
+        });
+    }
+</script>
+{% endblock %}

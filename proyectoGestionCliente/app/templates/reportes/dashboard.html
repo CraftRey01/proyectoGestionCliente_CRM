@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard de reportes{% endblock %}
+
+{% block content %}
+<div class="report-dashboard-heading mb-4">
+    <div>
+        <h1>Dashboard de reportes</h1>
+        <p class="report-dashboard-note">Una vista rápida de las ventas, campañas y el comportamiento de los estados de venta.</p>
+    </div>
+    <a href="/reportes/" class="btn btn-outline-secondary">Volver a reportes</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card summary-card p-4 h-100">
+            <div class="summary-card-title">Ventas registradas</div>
+            <div class="summary-card-value">{{ total_ventas or 0 }}</div>
+            <div class="summary-card-meta">Total de ventas pendientes, aprobadas y cerradas.</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card summary-card p-4 h-100">
+            <div class="summary-card-title">Campañas activas</div>
+            <div class="summary-card-value">{{ total_campanias or 0 }}</div>
+            <div class="summary-card-meta">Campañas totales cargadas en el sistema.</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card summary-card p-4 h-100">
+            <div class="summary-card-title">Monto total vendido</div>
+            <div class="summary-card-value">{{ suma_ventas or 0 }}</div>
+            <div class="summary-card-meta">Suma acumulada de todas las ventas.</div>
+        </div>
+    </div>
+</div>
+
+<div class="card p-4 mt-4">
+    <h2 class="mb-3">Comparativa: ventas vs campañas</h2>
+    <div class="dashboard-bar-grid">
+        <div class="dashboard-bar-card">
+            <p class="bar-label">Ventas</p>
+            <div class="bar-track">
+                <div class="bar-fill" id="bar-ventas"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-2">
+                <span>Valor</span>
+                <span class="bar-value" id="bar-ventas-value">0</span>
+            </div>
+        </div>
+        <div class="dashboard-bar-card">
+            <p class="bar-label">Campañas</p>
+            <div class="bar-track">
+                <div class="bar-fill" id="bar-campanias"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-2">
+                <span>Valor</span>
+                <span class="bar-value" id="bar-campanias-value">0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card p-4 mt-4">
+    <h2 class="mb-3">Ventas por estado</h2>
+    <div id="state-chart" class="state-chart"></div>
+</div>
+
+<script>
+
+const dashboardData = {
+    totalVentas: {{ total_ventas | default(0) | int }},
+    totalCampanias: {{ total_campanias | default(0) | int }},
+    totalMonto: {{ suma_ventas | default(0) | float }},
+    estados: {{ labels | tojson }},
+    valores: {{ valores | tojson }},
+}
+</script>
+<script src="/static/js/reporte.js"></script>
+{% endblock %}

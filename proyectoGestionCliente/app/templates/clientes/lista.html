@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Lista de Clientes{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="text-white">Clientes</h1>
+    {% if can_create %}
+    <a href="nuevo" class="btn btn-primary">Nuevo Cliente</a>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID Cliente</th>
+                        <th>Foto</th>
+                        <th>Nombre</th>
+                        <th>Telefono</th>
+                        <th>Correo</th>
+                        <th>Fecha Registro</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set registros_activos = clientes | selectattr('habilitado', 'equalto', 1) | list %}
+                    {% if registros_activos %}
+                    {% for elemento in registros_activos %}
+                    <tr>
+                        <td>{{ elemento.id_cliente }}</td>
+                        <td><img src="/static/img/{{ elemento.foto_cliente }}" width="80" height="80"
+                                style="object-fit: cover;"></td>
+                        <td>{{ elemento.nombre_cliente }}</td>
+                        <td>{{ elemento.telefono if can_view_full else mask_phone(elemento.telefono) }}</td>
+                        <td>{{ elemento.correo if can_view_full else mask_email(elemento.correo) }}</td>
+                        <td>{{ elemento.fecha_registro }}</td>
+                        <td><span class="badge bg-success">Activo</span></td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                {% if can_view_full %}
+                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal"
+                                    data-bs-target="#clienteDetailModal" data-nombre="{{ elemento.nombre_cliente }}"
+                                    data-telefono="{{ elemento.telefono if can_view_full else mask_phone(elemento.telefono) }}"
+                                    data-correo="{{ elemento.correo if can_view_full else mask_email(elemento.correo) }}"
+                                    data-fecha="{{ elemento.fecha_registro }}"
+                                    data-segmento="{{ elemento.segmento_cliente or 'Nuevo' }}">Ver Segmento</button>
+                                {% else %}
+                                <span class="text-muted">Sin acceso</span>
+                                {% endif %}
+                                {% if can_edit %}
+                                <a href="editar/{{ elemento.id_cliente }}" class="btn btn-sm btn-warning">Editar</a>
+                                {% endif %}
+                                {% if can_delete %}
+                                <a href="eliminar/{{ elemento.id_cliente }}" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('¿Seguro que deseas eliminar este registro?');">Eliminar</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-3">No hay registros activos.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Clientes Eliminados</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID Cliente</th>
+                        <th>Foto</th>
+                        <th>Nombre</th>
+                        <th>Telefono</th>
+                        <th>Correo</th>
+                        <th>Fecha Registro</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set registros_eliminados = clientes | selectattr('habilitado', 'equalto', 0) | list %}
+                    {% if registros_eliminados %}
+                    {% for elemento in registros_eliminados %}
+                    <tr>
+                        <td>{{ elemento.id_cliente }}</td>
+                        <td><img src="/static/img/{{ elemento.foto_cliente }}" width="80" height="80"
+                                style="object-fit: cover;"></td>
+                        <td>{{ elemento.nombre_cliente }}</td>
+                        <td>{{ elemento.telefono if can_view_full else mask_phone(elemento.telefono) }}</td>
+                        <td>{{ elemento.correo if can_view_full else mask_email(elemento.correo) }}</td>
+                        <td>{{ elemento.fecha_registro }}</td>
+                        <td><span class="badge bg-danger">Eliminado</span></td>
+                        <td class="text-center">
+                            {% if can_restore %}
+                            <a href="restaurar/{{ elemento.id_cliente }}" class="btn btn-sm btn-success"
+                                onclick="return confirm('¿Deseas restaurar este registro?');">Restaurar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-3">No hay registros eliminados.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+</div>
+
+<!-- Modal de detalles de cliente -->
+<div class="modal fade" id="clienteDetailModal" tabindex="-1" aria-labelledby="clienteDetailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clienteDetailModalLabel">Detalle del Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Nombre:</strong>
+                    <p id="cliente-detail-nombre" class="mb-1"></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Teléfono:</strong>
+                    <p id="cliente-detail-telefono" class="mb-1"></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Correo:</strong>
+                    <p id="cliente-detail-correo" class="mb-1"></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Segmento:</strong>
+                    <p id="cliente-detail-segmento" class="mb-1"></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Fecha registro:</strong>
+                    <p id="cliente-detail-fecha" class="mb-0"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var clienteModal = document.getElementById('clienteDetailModal');
+        clienteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            if (!button) return;
+
+            document.getElementById('cliente-detail-nombre').textContent = button.dataset.nombre || '';
+            document.getElementById('cliente-detail-telefono').textContent = button.dataset.telefono || '';
+            document.getElementById('cliente-detail-correo').textContent = button.dataset.correo || '';
+            document.getElementById('cliente-detail-segmento').textContent = button.dataset.segmento || 'Nuevo';
+            document.getElementById('cliente-detail-fecha').textContent = button.dataset.fecha || '';
+        });
+    });
+</script>
+
+{% endblock %}

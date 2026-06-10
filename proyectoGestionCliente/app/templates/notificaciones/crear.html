@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Crear notificación{% endblock %}
+{% block content %}
+<div class="card-header bg-info text-dark">
+    <h4 class="mb-0">Crear nueva notificación</h4>
+</div>
+<div class="card report-card p-4">
+    <form action="/notificaciones/nuevo" method="post">
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">ID de notificación</label>
+                <input type="number" name="id_notificacion" class="form-control" placeholder="ID manual" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">ID de usuario</label>
+                <input type="number" name="id_usuario" class="form-control" placeholder="ID usuario" required>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mensaje</label>
+            <textarea name="mensaje" class="form-control" rows="4" placeholder="Escribe el contenido de la notificación"
+                required></textarea>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Tipo de notificación</label>
+                <select name="tipo_notificacion" class="form-select" required>
+                    <option value="General">General</option>
+                    <option value="Alerta">Alerta</option>
+                    <option value="Recordatorio">Recordatorio</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-select" required>
+                    <option value="enviado">enviado</option>
+                    <option value="pendiente">pendiente</option>
+                    <option value="fallido">fallido</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+            <div class="col-md-6">
+                <label class="form-label">Fecha de envío</label>
+                <input type="datetime-local" name="fecha_envio" class="form-control">
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-primary">Guardar notificación</button>
+            <a href="/notificaciones/" class="btn btn-secondary ms-2">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

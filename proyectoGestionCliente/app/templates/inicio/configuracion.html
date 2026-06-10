@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Configuración - CRM
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">Configuración</h2>
+                <p>Bienvenido {{ usuario.nombre_usuario or 'Usuario' }}.</p>
+                <p>Por ahora esta sección es un espacio reservado para ajustes del sistema.</p>
+                <div class="mt-4 text-center">
+                    <a href="/inicio" class="btn btn-primary">Volver al inicio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

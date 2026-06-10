@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Lista de Oportunidades{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="text-white">Oportunidades</h1>
+    <div>
+        <a href="nuevo" class="btn btn-primary me-2">Nueva Oportunidad</a>
+        <a href="/oportunidades/automatizar" class="btn btn-success"
+            onclick="return confirm('¿Deseas generar una oportunidad automática?');">Automatizar oportunidad</a>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Descripcion</th>
+                        <th>Monto Estimado</th>
+                        <th>Estado</th>
+                        <th>Cliente</th>
+                        <th>Usuario</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set registros_activos = oportunidades | selectattr('habilitado', 'equalto', 1) | list %}
+                    {% if registros_activos %}
+                    {% for elemento in registros_activos %}
+                    <tr>
+                        <td>{{ elemento.id_oportunidad }}</td>
+                        <td>{{ elemento.descripcion }}</td>
+                        <td>{{ elemento.monto_estimado }}</td>
+                        <td>
+                            {% if elemento.estado | lower in ['abierta', 'abierto'] %}
+                            <span class="badge bg-info text-dark">Abierta</span>
+                            {% elif elemento.estado | lower in ['en proceso', 'proceso'] %}
+                            <span class="badge bg-warning text-dark">En proceso</span>
+                            {% elif elemento.estado | lower in ['cerrada', 'cerrado'] %}
+                            <span class="badge bg-success">Cerrada</span>
+                            {% elif elemento.estado | lower in ['perdida', 'perdido'] %}
+                            <span class="badge bg-danger">Perdida</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ elemento.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if elemento.cliente %}
+                            {{ elemento.cliente.nombre_cliente }}
+                            {% else %}
+                            ID Cliente: {{ elemento.id_cliente }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if elemento.usuario %}
+                            {{ elemento.usuario.nombre_usuario }}
+                            {% else %}
+                            ID Usuario: {{ elemento.id_usuario }}
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="editar/{{ elemento.id_oportunidad }}" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="eliminar/{{ elemento.id_oportunidad }}" class="btn btn-sm btn-danger"
+                                onclick="return confirm('¿Seguro que deseas eliminar este registro?');">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-3">No hay registros activos.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Oportunidades Eliminados</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Descripcion</th>
+                        <th>Monto Estimado</th>
+                        <th>Estado</th>
+                        <th>Cliente</th>
+                        <th>Usuario</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set registros_eliminados = oportunidades | selectattr('habilitado', 'equalto', 0) | list %}
+                    {% if registros_eliminados %}
+                    {% for elemento in registros_eliminados %}
+                    <tr>
+                        <td>{{ elemento.id_oportunidad }}</td>
+                        <td>{{ elemento.descripcion }}</td>
+                        <td>{{ elemento.monto_estimado }}</td>
+                        <td>
+                            {% if elemento.estado | lower in ['abierta', 'abierto'] %}
+                            <span class="badge bg-info text-dark">Abierta</span>
+                            {% elif elemento.estado | lower in ['en proceso', 'proceso'] %}
+                            <span class="badge bg-warning text-dark">En proceso</span>
+                            {% elif elemento.estado | lower in ['cerrada', 'cerrado'] %}
+                            <span class="badge bg-danger">Cerrada</span>
+                            {% elif elemento.estado | lower in ['perdida', 'perdido'] %}
+                            <span class="badge bg-secondary">Perdida</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ elemento.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if elemento.cliente %}
+                            {{ elemento.cliente.nombre_cliente }}
+                            {% else %}
+                            ID Cliente: {{ elemento.id_cliente }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if elemento.usuario %}
+                            {{ elemento.usuario.nombre_usuario }}
+                            {% else %}
+                            ID Usuario: {{ elemento.id_usuario }}
+                            {% endif %}
+                        </td>
+                        <td><span class="badge bg-danger">Eliminado</span></td>
+                        <td class="text-center">
+                            <a href="restaurar/{{ elemento.id_oportunidad }}" class="btn btn-sm btn-success"
+                                onclick="return confirm('¿Deseas restaurar este registro?');">Restaurar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-3">No hay registros eliminados.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+</div>
+{% endblock %}

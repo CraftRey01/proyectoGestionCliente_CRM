@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+
+{% block title %}Reportes{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/css/kpi-cards.css">
+{% endblock %}
+
+{% block content %}
+<div class="report-page-header mb-4">
+    <div>
+        <h1 class="text-white">Reportes</h1>
+        <p class="text-info">Resumen de reportes, estadísticas de ventas y estado de las campañas.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/reportes/nuevo" class="btn btn-primary">Nuevo Reporte</a>
+        <a href="/reportes/automatizar" class="btn btn-success">Automatizar ahora</a>
+    </div>
+</div>
+
+<div class="row gy-4">
+    <!-- TARJETAS KPI COLORIDAS -->
+    <div class="col-12">
+        <div class="row g-3">
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="kpi-card kpi-blue">
+
+                    <div class="kpi-value">{{ total_ventas or 0 }}</div>
+                    <div class="kpi-label">Total de Ventas</div>
+                    <div class="kpi-footer"><a href="#" class="kpi-link">Más info →</a></div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="kpi-card kpi-green">
+
+                    <div class="kpi-value">{{ total_campanias or 0 }}</div>
+                    <div class="kpi-label">Campañas</div>
+                    <div class="kpi-footer"><a href="#" class="kpi-link">Más info →</a></div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="kpi-card kpi-yellow">
+
+                    <div class="kpi-value">${{ "%.0f"|format(suma_ventas or 0) }}</div>
+                    <div class="kpi-label">Monto Vendido</div>
+                    <div class="kpi-footer"><a href="#" class="kpi-link">Más info →</a></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- GRÁFICOS LADO A LADO: BARRA Y CÍRCULO -->
+    <div class="col-12">
+        <div class="row g-4">
+            <!-- GRÁFICO DE BARRAS -->
+            <div class="col-12 col-lg-6">
+                <div class="card report-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h2 class="fs-5 mb-1">Reporte general</h2>
+                            <p class="text-muted mb-0">Ventas vs campañas.</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="general-bar-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRÁFICO CIRCULAR (PIE) -->
+            <div class="col-12 col-lg-6">
+                <div class="card report-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h2 class="fs-5 mb-1">Ventas por estado</h2>
+                            <p class="text-muted mb-0">Distribución de estados.</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="state-pie-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA DE REPORTES -->
+    <div class="col-12">
+        <div class="card report-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="fs-5 mb-1">Resumen de reportes</h2>
+                    <p class="text-muted mb-0">Acciones, edición y eliminación.</p>
+                </div>
+            </div>
+
+            {% if reportes %}
+            <div class="table-responsive w-100">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Periodo</th>
+                            <th>Fecha</th>
+                            <th>Resumen</th>
+                            <th class="text-end">Acciones</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for reporte in reportes %}
+                        <tr>
+                            <td>{{ reporte.id_reporte }}</td>
+                            <td>{{ reporte.tipo_reporte }}</td>
+                            <td>{{ reporte.periodo }}</td>
+                            <td>
+                                {{ reporte.fecha_generacion.strftime('%Y-%m-%d') if reporte.fecha_generacion else '-' }}
+                            </td>
+                            <td>{{ reporte.resumen or '-' }}</td>
+
+                            <td class="text-center">
+                                <a href="/reportes/editar/{{ reporte.id_reporte }}" class="btn btn-sm btn-warning">
+                                    Editar
+                                </a>
+
+                                <a href="/reportes/eliminar/{{ reporte.id_reporte }}" class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Seguro que deseas eliminar este reporte?');">
+                                    Eliminar
+                                </a>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-success">Activo</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-secondary mb-0">
+                No hay reportes activos en este momento.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- GRÁFICO DE REPORTES POR PERÍODO (abajo) -->
+<div class="row gy-4 mt-2">
+    <div class="col-12">
+        <div class="card report-card p-4 h-100 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="fs-5 mb-1">Reportes por Período</h2>
+                    <p class="text-muted mb-0">Evolución de reportes generados en el tiempo.</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="reports-line-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if reportes_eliminados %}
+<div class="row gy-4 mt-2">
+    <div class="col-12">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Reportes Eliminados</h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-striped table-hover align-middle mb-0">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Periodo</th>
+                                <th>Fecha</th>
+                                <th>Resumen</th>
+                                <th class="text-end">Acciones</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        {% for reporte in reportes_eliminados %}
+                            <tr>
+
+                                <td>{{ reporte.id_reporte }}</td>
+
+                                <td>{{ reporte.tipo_reporte }}</td>
+
+                                <td>{{ reporte.periodo }}</td>
+
+                                <td>
+                                    {{ reporte.fecha_generacion.strftime('%Y-%m-%d') if reporte.fecha_generacion else '-' }}
+                                </td>
+
+                                <td>{{ reporte.resumen or '-' }}</td>
+
+                                <td class="text-end">
+                                    <a href="/reportes/restaurar/{{ reporte.id_reporte }}" class="btn btn-success btn-sm">
+                                        Restaurar
+                                    </a>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-secondary">Eliminado</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+window.reportData = {
+    totalVentas: {{ total_ventas | default(0) | int }},
+    totalCampanias: {{ total_campanias | default(0) | int }},
+    sumaVentas: {{ suma_ventas | default(0) | float }},
+    labels: {{ labels | tojson }},
+    valores: {{ valores | tojson }},
+    periodosOrdenados: {{ periodos_ordenados | tojson }},
+    conteos: {{ conteos_reportes | tojson }}
+};
+</script>
+<script src="/static/js/report_grafico.js"></script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Editar Campania{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Modificar Campaña</h4>
+            </div>
+            <div class="card-body">
+                <form action="/campanias/editar/{{ campania.id_campania }}" method="POST">
+                    <div class="mb-3">
+                        <label for="id_campania" class="form-label">ID Campaña</label>
+                        <input type="number" class="form-control" id="id_campania" name="id_campania"
+                            value="{{ campania.id_campania }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre_campania" class="form-label">Nombre de Campaña</label>
+                        <input type="text" class="form-control" id="nombre_campania" name="nombre_campania"
+                            value="{{ campania.nombre_campania }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipo_campania" class="form-label">Tipo</label>
+                        <input type="text" class="form-control" id="tipo_campania" name="tipo_campania"
+                            value="{{ campania.tipo_campania }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+                        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio"
+                            value="{{ campania.fecha_inicio }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_finalizacion" class="form-label">Fecha Finalizacion</label>
+                        <input type="date" class="form-control" id="fecha_finalizacion" name="fecha_finalizacion"
+                            value="{{ campania.fecha_finalizacion }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="resultado_obtenido" class="form-label">Resultado Obtenido</label>
+                        <input type="text" class="form-control" id="resultado_obtenido" name="resultado_obtenido"
+                            value="{{ campania.resultado_obtenido }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="clientes" class="form-label">Clientes</label>
+                        <select id="clientes" name="clientes" class="form-control" multiple size="6">
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.id_cliente }}" {% if cliente.id_cliente in selected_client_ids %}selected{% endif %}>{{ cliente.nombre_cliente }} - {{ cliente.correo or '' }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="mt-2">
+                            <button type="button" id="select-all" class="btn btn-outline-info btn-sm">Seleccionar todos</button>
+                            <button type="button" id="clear-all" class="btn btn-outline-warning btn-sm">Limpiar</button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/campanias" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+            {% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Reporte{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Nuevo Reporte</h4>
+            </div>
+
+            <div class="card-body">
+                <form action="/reportes/nuevo" method="POST">
+
+                    <div class="mb-3">
+                        <label for="id_reporte" class="form-label">ID Reporte</label>
+                        <input type="number" class="form-control" id="id_reporte" name="id_reporte"
+                            placeholder="Ingrese el ID" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tipo_reporte" class="form-label">Tipo de Reporte</label>
+                        <select class="form-control" id="tipo_reporte" name="tipo_reporte" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="campaña">Campaña</option>
+                            <option value="venta">Venta</option>
+                            <option value="general">General</option>
+                            <option value="oportunidad">Oportunidad</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="periodo" class="form-label">Periodo</label>
+                        <input type="text" class="form-control" id="periodo" name="periodo" placeholder="Ej. Enero 2026"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_generacion" class="form-label">Fecha de Generación</label>
+                        <input type="datetime-local" class="form-control" id="fecha_generacion" name="fecha_generacion">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formato" class="form-label">Formato</label>
+                        <select class="form-control" id="formato" name="formato" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="web">Web</option>
+                            <option value="pdf">PDF</option>
+                            <option value="imagen">Imagen</option>
+                            <option value="svg">SVG</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="resumen" class="form-label">Resumen</label>
+                        <textarea class="form-control" id="resumen" name="resumen" rows="4"
+                            placeholder="Ingrese un resumen del reporte"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tipo_grafico" class="form-label">Tipo de Gráfico</label>
+                        <select class="form-control" id="tipo_grafico" name="tipo_grafico" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="barras">Barras</option>
+                            <option value="lineas">Líneas</option>
+                            <option value="circular">Circular</option>
+                            <option value="area">Área</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/reportes/" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+
+                        <button type="submit" class="btn btn-success">
+                            Guardar Reporte
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
